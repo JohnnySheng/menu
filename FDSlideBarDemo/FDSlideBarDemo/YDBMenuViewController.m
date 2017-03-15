@@ -27,7 +27,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    _data2 = [NSMutableArray arrayWithObjects:@"智能排序", @"离我最近", @"评价最高", @"最新发布", @"人气最高", @"价格最低", @"价格最高", nil];
+    _data1 = _data2 = _data3 = [NSMutableArray arrayWithObjects:@"智能排序", @"离我最近", @"评价最高", @"最新发布", @"人气最高", @"价格最低", @"价格最高", nil];
     
     JSDropDownMenu *menu = [[JSDropDownMenu alloc] initWithOrigin:CGPointMake(0, 0) andHeight:45];
     menu.indicatorColor = [UIColor colorWithRed:175.0f/255.0f green:175.0f/255.0f blue:175.0f/255.0f alpha:1.0];
@@ -42,27 +42,80 @@
 
 
 - (NSInteger)numberOfColumnsInMenu:(JSDropDownMenu *)menu {
-    return 1;
+    return 3;
 }
 
 -(NSInteger)currentLeftSelectedRow:(NSInteger)column{
-    return _currentData2Index;
+    switch (column) {
+        case 0:
+            return _currentData1Index;
+            break;
+        case 1:
+            return _currentData2Index;
+            break;
+        default:
+            return _currentData3Index;
+            break;
+    }
 }
 
 - (NSInteger)menu:(JSDropDownMenu *)menu numberOfRowsInColumn:(NSInteger)column leftOrRight:(NSInteger)leftOrRight leftRow:(NSInteger)leftRow{
-    return _data2.count;
+    switch (column) {
+        case 0:
+            return _data1.count;
+            break;
+        case 1:
+            return _data2.count;
+            break;
+        default:
+            return _data3.count;
+            break;
+    }
+   
 }
 
 - (NSString *)menu:(JSDropDownMenu *)menu titleForColumn:(NSInteger)column{
-    return _data2[column];
+    switch (column) {
+        case 0:
+            return _data1[0];
+            break;
+        case 1:
+            return _data2[0];
+            break;
+        default:
+            return _data3[0];
+            break;
+    }
 }
 
 - (NSString *)menu:(JSDropDownMenu *)menu titleForRowAtIndexPath:(JSIndexPath *)indexPath {
-     return _data2[indexPath.row];
+    
+    switch (indexPath.column) {
+        case 0:
+            return _data1[indexPath.row];
+            break;
+        case 1:
+            return _data2[indexPath.row];
+            break;
+        default:
+            return _data3[indexPath.row];
+            break;
+    }
 }
 
 - (void)menu:(JSDropDownMenu *)menu didSelectRowAtIndexPath:(JSIndexPath *)indexPath {
-    _currentData2Index = indexPath.row;
+    
+    switch (indexPath.column) {
+        case 0:
+            _currentData1Index = indexPath.row;
+            break;
+        case 1:
+            _currentData2Index = indexPath.row;
+            break;
+        default:
+            _currentData3Index = indexPath.row;
+            break;
+    }
 }
 
 - (void)didReceiveMemoryWarning {

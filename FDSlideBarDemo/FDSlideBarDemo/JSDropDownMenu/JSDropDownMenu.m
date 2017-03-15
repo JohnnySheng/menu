@@ -88,7 +88,7 @@
         _numOfMenu = 1;
     }
     //TODO_Johnny:Changed to 15
-    CGFloat textLayerInterval = 15;//self.frame.size.width / ( _numOfMenu * 2);
+    CGFloat textLayerInterval = self.frame.size.width / ( _numOfMenu * 2);
     
     CGFloat separatorLineInterval = self.frame.size.width / _numOfMenu;
     
@@ -105,13 +105,13 @@
         [self.layer addSublayer:bgLayer];
         [tempBgLayers addObject:bgLayer];
         //title
-        CGPoint titlePosition = CGPointMake( (i * 2 + 1) * textLayerInterval , self.frame.size.height / 2);
+        
         NSString *titleString = [_dataSource menu:self titleForColumn:i];
-        CATextLayer *title = [self createTextLayerWithNSString:titleString withColor:self.textColor andPosition:titlePosition];
+        CATextLayer *title = [self createTextLayerWithNSString:titleString withColor:self.textColor index:i interval:textLayerInterval];
         [self.layer addSublayer:title];
         [tempTitles addObject:title];
         //indicator
-        CAShapeLayer *indicator = [self createIndicatorWithColor:self.indicatorColor andPosition:CGPointMake(self.frame.size.width - 30, self.frame.size.height / 2)];
+        CAShapeLayer *indicator = [self createIndicatorWithColor:self.indicatorColor andPosition:CGPointMake(textLayerInterval*2*(i+1) - 22, self.frame.size.height / 2)];
         [self.layer addSublayer:indicator];
         [tempIndicators addObject:indicator];
         
@@ -226,7 +226,7 @@
     return layer;
 }
 
-- (CATextLayer *)createTextLayerWithNSString:(NSString *)string withColor:(UIColor *)color andPosition:(CGPoint)point {
+- (CATextLayer *)createTextLayerWithNSString:(NSString *)string withColor:(UIColor *)color index:(int)index interval:(CGFloat)interval {
     
     CGSize size = [self calculateTitleSizeWithString:string];
     
@@ -239,8 +239,9 @@
     layer.foregroundColor = color.CGColor;
     
     layer.contentsScale = [[UIScreen mainScreen] scale];
-    point.x = point.x + sizeWidth/2.f;
-    layer.position = point;
+    
+    CGPoint titlePosition = CGPointMake(15 + index*2*interval + sizeWidth/2.f, self.frame.size.height / 2);
+    layer.position = titlePosition;
     
     return layer;
 }
