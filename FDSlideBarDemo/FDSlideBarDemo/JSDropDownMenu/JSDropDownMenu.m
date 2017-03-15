@@ -9,7 +9,6 @@
 #import "JSDropDownMenu.h"
 #import "JSIndexPath.h"
 #import "JSTableViewCell.h"
-#import "JSCollectionViewCell.h"
 #import "NSString+YDBSize.h"
 
 #define BackColor [UIColor colorWithRed:244.0f/255.0f green:244.0f/255.0f blue:244.0f/255.0f alpha:1.0]
@@ -152,20 +151,10 @@
         _rightTableView.dataSource = self;
         _rightTableView.delegate = self;
         
-        UICollectionViewFlowLayout *flowLayout=[[UICollectionViewFlowLayout alloc] init];
-        flowLayout.minimumInteritemSpacing = 0;
-        _collectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(origin.x, self.frame.origin.y + self.frame.size.height, self.frame.size.width, 0) collectionViewLayout:flowLayout];
-        
-        [_collectionView registerClass:[JSCollectionViewCell class] forCellWithReuseIdentifier:@"CollectionCell"];
-        _collectionView.backgroundColor = BackColor;
-        _collectionView.dataSource = self;
-        _collectionView.delegate = self;
-        
         
         self.autoresizesSubviews = NO;
         _leftTableView.autoresizesSubviews = NO;
         _rightTableView.autoresizesSubviews = NO;
-        _collectionView.autoresizesSubviews = NO;
         
         //self tapped
         self.backgroundColor = [UIColor whiteColor];
@@ -286,108 +275,66 @@
         }
     }
     
-    BOOL displayByCollectionView = NO;
+    BOOL haveRightTableView = [_dataSource haveRightTableViewInColumn:tapIndex];
+    //        UITableView *leftTableView = _leftTableView;
+    UITableView *rightTableView = nil;
     
-    if ([_dataSource respondsToSelector:@selector(displayByCollectionViewInColumn:)]) {
+    if (haveRightTableView) {
+        rightTableView = _rightTableView;
+        // 修改左右tableview显示比例
         
-        displayByCollectionView = [_dataSource displayByCollectionViewInColumn:tapIndex];
     }
     
-    if (displayByCollectionView) {
+    if (tapIndex == _currentSelectedMenudIndex && _show) {
         
-        UICollectionView *collectionView = _collectionView;
-        
-        if (tapIndex == _currentSelectedMenudIndex && _show) {
-            [self animateIdicator:_indicators[_currentSelectedMenudIndex] background:_backGroundView collectionView:collectionView title:_titles[_currentSelectedMenudIndex] forward:NO complecte:^{
-                _currentSelectedMenudIndex = tapIndex;
-                _show = NO;
-            }];
-            
-//            [(CALayer *)self.bgLayers[tapIndex] setBackgroundColor:BackColor.CGColor];
-        } else {
-            
+        [self animateIdicator:_indicators[_currentSelectedMenudIndex] background:_backGroundView leftTableView:_leftTableView rightTableView:_rightTableView title:_titles[_currentSelectedMenudIndex] forward:NO complecte:^{
             _currentSelectedMenudIndex = tapIndex;
-            
-            [_collectionView reloadData];
-            
-            if (_currentSelectedMenudIndex!=-1) {
-                // 需要隐藏tableview
-                [self animateLeftTableView:_leftTableView rightTableView:_rightTableView show:NO complete:^{
-                    
-                    [self animateIdicator:_indicators[tapIndex] background:_backGroundView collectionView:collectionView title:_titles[tapIndex] forward:YES complecte:^{
-                        _show = YES;
-                    }];
-                }];
-            } else{
-                [self animateIdicator:_indicators[tapIndex] background:_backGroundView collectionView:collectionView title:_titles[tapIndex] forward:YES complecte:^{
-                    _show = YES;
-                }];
-            }
-//            [(CALayer *)self.bgLayers[tapIndex] setBackgroundColor:SelectColor.CGColor];
-        }
-    } else{
+            _show = NO;
+        }];
         
-        BOOL haveRightTableView = [_dataSource haveRightTableViewInColumn:tapIndex];
-//        UITableView *leftTableView = _leftTableView;
-        UITableView *rightTableView = nil;
+        //            [(CALayer *)self.bgLayers[tapIndex] setBackgroundColor:BackColor.CGColor];
+    } else {
         
-        if (haveRightTableView) {
-            rightTableView = _rightTableView;
-            // 修改左右tableview显示比例
+        _hadSelected = NO;
+        
+        _currentSelectedMenudIndex = tapIndex;
+        
+        if ([_dataSource respondsToSelector:@selector(currentLeftSelectedRow:)]) {
             
+            _leftSelectedRow = [_dataSource currentLeftSelectedRow:_currentSelectedMenudIndex];
         }
         
-        if (tapIndex == _currentSelectedMenudIndex && _show) {
+        if (rightTableView) {
+            [rightTableView reloadData];
+        }
+        [_leftTableView reloadData];
+        
+        CGFloat ratio = [_dataSource widthRatioOfLeftColumn:_currentSelectedMenudIndex];
+        if (_leftTableView) {
             
-            [self animateIdicator:_indicators[_currentSelectedMenudIndex] background:_backGroundView leftTableView:_leftTableView rightTableView:_rightTableView title:_titles[_currentSelectedMenudIndex] forward:NO complecte:^{
-                _currentSelectedMenudIndex = tapIndex;
-                _show = NO;
-            }];
+            _leftTableView.frame = CGRectMake(_leftTableView.frame.origin.x, self.frame.origin.y + self.frame.size.height, self.frame.size.width*ratio, 0);
+        }
+        
+        if (_rightTableView) {
             
-//            [(CALayer *)self.bgLayers[tapIndex] setBackgroundColor:BackColor.CGColor];
-        } else {
-            
-            _hadSelected = NO;
-            
-            _currentSelectedMenudIndex = tapIndex;
-            
-            if ([_dataSource respondsToSelector:@selector(currentLeftSelectedRow:)]) {
+            _rightTableView.frame = CGRectMake(_origin.x+_leftTableView.frame.size.width, self.frame.origin.y + self.frame.size.height, self.frame.size.width*(1-ratio), 0);
+        }
+        
+        if (_currentSelectedMenudIndex!=-1) {
+            // 需要隐藏collectionview
+            [self animateCollectionView:_collectionView show:NO complete:^{
                 
-                _leftSelectedRow = [_dataSource currentLeftSelectedRow:_currentSelectedMenudIndex];
-            }
-            
-            if (rightTableView) {
-                [rightTableView reloadData];
-            }
-            [_leftTableView reloadData];
-            
-            CGFloat ratio = [_dataSource widthRatioOfLeftColumn:_currentSelectedMenudIndex];
-            if (_leftTableView) {
-                
-                _leftTableView.frame = CGRectMake(_leftTableView.frame.origin.x, self.frame.origin.y + self.frame.size.height, self.frame.size.width*ratio, 0);
-            }
-            
-            if (_rightTableView) {
-                
-                _rightTableView.frame = CGRectMake(_origin.x+_leftTableView.frame.size.width, self.frame.origin.y + self.frame.size.height, self.frame.size.width*(1-ratio), 0);
-            }
-            
-            if (_currentSelectedMenudIndex!=-1) {
-                // 需要隐藏collectionview
-                [self animateCollectionView:_collectionView show:NO complete:^{
-                    
-                    [self animateIdicator:_indicators[tapIndex] background:_backGroundView leftTableView:_leftTableView rightTableView:_rightTableView title:_titles[tapIndex] forward:YES complecte:^{
-                        _show = YES;
-                    }];
-                }];
-                
-            } else{
                 [self animateIdicator:_indicators[tapIndex] background:_backGroundView leftTableView:_leftTableView rightTableView:_rightTableView title:_titles[tapIndex] forward:YES complecte:^{
                     _show = YES;
                 }];
-            }
-//            [(CALayer *)self.bgLayers[tapIndex] setBackgroundColor:SelectColor.CGColor];
+            }];
+            
+        } else{
+            [self animateIdicator:_indicators[tapIndex] background:_backGroundView leftTableView:_leftTableView rightTableView:_rightTableView title:_titles[tapIndex] forward:YES complecte:^{
+                _show = YES;
+            }];
         }
+        //            [(CALayer *)self.bgLayers[tapIndex] setBackgroundColor:SelectColor.CGColor];
     }
 }
 
@@ -754,95 +701,6 @@
     
     CAShapeLayer *indicator = (CAShapeLayer *)_indicators[_currentSelectedMenudIndex];
 //    indicator.position = CGPointMake(title.position.x + title.frame.size.width / 2 + 8, indicator.position.y);
-}
-
-#pragma mark - UICollectionViewDataSource
-
--(NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView{
-    return 1;
-}
-
--(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
-    
-    // 为collectionview时 leftOrRight 为-1
-    if ([self.dataSource respondsToSelector:@selector(menu:numberOfRowsInColumn:leftOrRight: leftRow:)]) {
-        return [self.dataSource menu:self numberOfRowsInColumn:self.currentSelectedMenudIndex leftOrRight:-1 leftRow:-1];
-    } else {
-        NSAssert(0 == 1, @"required method of dataSource protocol should be implemented");
-        return 0;
-    }
-}
-
--(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
-    
-    static NSString *collectionCell = @"CollectionCell";
-    JSCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:collectionCell forIndexPath:indexPath];
-    
-    if ([self.dataSource respondsToSelector:@selector(menu:titleForRowAtIndexPath:)]) {
-        cell.textLabel.text = [self.dataSource menu:self titleForRowAtIndexPath:[JSIndexPath indexPathWithCol:self.currentSelectedMenudIndex leftOrRight:-1 leftRow:-1 row:indexPath.row]];
-    } else {
-        NSAssert(0 == 1, @"dataSource method needs to be implemented");
-    }
-    cell.backgroundColor = [UIColor whiteColor];
-    cell.selectedBackgroundView.backgroundColor = BackColor;
-    cell.textLabel.font = [UIFont systemFontOfSize:14.0];
-    cell.textLabel.textColor = self.textColor;
-    
-    if ([cell.textLabel.text isEqualToString:[(CATextLayer *)[_titles objectAtIndex:_currentSelectedMenudIndex] string]]) {
-        cell.backgroundColor = BackColor;
-        
-//        cell.textLabel.textColor = _selectedTextColor;
-//        cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ico_make"]];
-    } else{
-        
-//        cell.textLabel.textColor = self.textColor;
-//        [cell removeAccessoryView];
-    }
-    
-    return cell;
-}
-
-#pragma mark --UICollectionViewDelegateFlowLayout
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    return CGSizeMake((collectionView.frame.size.width-1)/2, 38);
-}
-
--(UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section
-{
-    return UIEdgeInsetsMake(0, 0, 1, 0.5);
-}
-
-#pragma mark --UICollectionViewDelegate
--(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (self.delegate || [self.delegate respondsToSelector:@selector(menu:didSelectRowAtIndexPath:)]) {
-        
-        [self confiMenuWithSelectRow:indexPath.row];
-        
-        [self.delegate menu:self didSelectRowAtIndexPath:[JSIndexPath indexPathWithCol:self.currentSelectedMenudIndex leftOrRight:-1 leftRow:-1 row:indexPath.row]];
-    } else {
-        //TODO: delegate is nil
-    }
-}
-
-- (void)confiMenuWithSelectRow:(NSInteger)row{
-    CATextLayer *title = (CATextLayer *)_titles[_currentSelectedMenudIndex];
-    title.string = [self.dataSource menu:self titleForRowAtIndexPath:[JSIndexPath indexPathWithCol:self.currentSelectedMenudIndex leftOrRight:-1 leftRow:-1 row:row]];
-    
-    [self animateIdicator:_indicators[_currentSelectedMenudIndex] background:_backGroundView collectionView:_collectionView title:_titles[_currentSelectedMenudIndex] forward:NO complecte:^{
-        _show = NO;
-    }];
-
-//    [(CALayer *)self.bgLayers[_currentSelectedMenudIndex] setBackgroundColor:BackColor.CGColor];
-    
-    CAShapeLayer *indicator = (CAShapeLayer *)_indicators[_currentSelectedMenudIndex];
-    indicator.position = CGPointMake(title.position.x + title.frame.size.width / 2 + 8, indicator.position.y);
-}
-
-- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section{
-    
-    return 0.5;
 }
 
 @end

@@ -14,6 +14,7 @@
 @property (nonatomic, assign) NSInteger leftOrRight;
 @property (nonatomic, assign) NSInteger leftRow;
 @property (nonatomic, assign) NSInteger row;
+
 - (instancetype)initWithColumn:(NSInteger)column leftOrRight:(NSInteger)leftOrRight leftRow:(NSInteger)leftRow row:(NSInteger)row;
 + (instancetype)indexPathWithCol:(NSInteger)col leftOrRight:(NSInteger)leftOrRight leftRow:(NSInteger)leftRow row:(NSInteger)row;
 

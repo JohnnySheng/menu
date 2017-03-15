@@ -50,7 +50,7 @@
 @end
 
 #pragma mark - interface
-@interface JSDropDownMenu : UIView <UITableViewDataSource, UITableViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate,UICollectionViewDelegateFlowLayout>
+@interface JSDropDownMenu : UIView <UITableViewDataSource, UITableViewDelegate>
 
 @property (nonatomic, weak) id <JSDropDownMenuDataSource> dataSource;
 @property (nonatomic, weak) id <JSDropDownMenuDelegate> delegate;
@@ -68,6 +68,7 @@
  *  @return menu
  */
 - (instancetype)initWithOrigin:(CGPoint)origin andHeight:(CGFloat)height;
+
 - (NSString *)titleForRowAtIndexPath:(JSIndexPath *)indexPath;
 
 @end

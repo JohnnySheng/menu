@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		0B87EFA31E793AFB00C74A55 /* ico_make.png in Resources */ = {isa = PBXBuildFile; fileRef = 0B87EF981E793AFB00C74A55 /* ico_make.png */; };
-		0B87EFA41E793AFB00C74A55 /* JSCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B87EF9A1E793AFB00C74A55 /* JSCollectionViewCell.m */; };
 		0B87EFA51E793AFB00C74A55 /* JSDropDownMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B87EF9C1E793AFB00C74A55 /* JSDropDownMenu.m */; };
 		0B87EFA61E793AFB00C74A55 /* JSIndexPath.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B87EF9E1E793AFB00C74A55 /* JSIndexPath.m */; };
 		0B87EFA71E793AFB00C74A55 /* JSTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B87EFA01E793AFB00C74A55 /* JSTableViewCell.m */; };
@@ -38,8 +37,6 @@
 
 /* Begin PBXFileReference section */
 		0B87EF981E793AFB00C74A55 /* ico_make.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ico_make.png; sourceTree = "<group>"; };
-		0B87EF991E793AFB00C74A55 /* JSCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSCollectionViewCell.h; sourceTree = "<group>"; };
-		0B87EF9A1E793AFB00C74A55 /* JSCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSCollectionViewCell.m; sourceTree = "<group>"; };
 		0B87EF9B1E793AFB00C74A55 /* JSDropDownMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSDropDownMenu.h; sourceTree = "<group>"; };
 		0B87EF9C1E793AFB00C74A55 /* JSDropDownMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSDropDownMenu.m; sourceTree = "<group>"; };
 		0B87EF9D1E793AFB00C74A55 /* JSIndexPath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSIndexPath.h; sourceTree = "<group>"; };
@@ -93,8 +90,6 @@
 			isa = PBXGroup;
 			children = (
 				0B87EF981E793AFB00C74A55 /* ico_make.png */,
-				0B87EF991E793AFB00C74A55 /* JSCollectionViewCell.h */,
-				0B87EF9A1E793AFB00C74A55 /* JSCollectionViewCell.m */,
 				0B87EF9B1E793AFB00C74A55 /* JSDropDownMenu.h */,
 				0B87EF9C1E793AFB00C74A55 /* JSDropDownMenu.m */,
 				0B87EF9D1E793AFB00C74A55 /* JSIndexPath.h */,
@@ -134,8 +129,8 @@
 				EA30E73C1B2034C1000A8291 /* AppDelegate.m */,
 				EA8AD9F11B54AE98007802CF /* ViewController.h */,
 				EA8AD9F21B54AE98007802CF /* ViewController.m */,
-				0B87EFA91E793B4200C74A55 /* YDBMenuViewController.m */,
 				0B87EFAA1E793B4200C74A55 /* YDBMenuViewController.h */,
+				0B87EFA91E793B4200C74A55 /* YDBMenuViewController.m */,
 				EA30E7411B2034C1000A8291 /* Main.storyboard */,
 				EA30E7441B2034C1000A8291 /* Images.xcassets */,
 				EA30E7461B2034C1000A8291 /* LaunchScreen.xib */,
@@ -287,7 +282,6 @@
 			files = (
 				0B87EFA71E793AFB00C74A55 /* JSTableViewCell.m in Sources */,
 				0B87EFAB1E793B4200C74A55 /* YDBMenuViewController.m in Sources */,
-				0B87EFA41E793AFB00C74A55 /* JSCollectionViewCell.m in Sources */,
 				EA23932B1B43E38C0021FB0D /* FDSlideContentView.m in Sources */,
 				0B87EFA51E793AFB00C74A55 /* JSDropDownMenu.m in Sources */,
 				EA8AD9F31B54AE98007802CF /* ViewController.m in Sources */,
