@@ -20,19 +20,23 @@
 @interface JSDropDownMenu ()
 @property (nonatomic, assign) NSInteger currentSelectedMenudIndex;
 @property (nonatomic, assign) BOOL show;
+//number of menu
 @property (nonatomic, assign) NSInteger numOfMenu;
 @property (nonatomic, assign) CGPoint origin;
 @property (nonatomic, strong) UIView *backGroundView;
 @property (nonatomic, strong) UIView *bottomShadow;
 @property (nonatomic, strong) UITableView *leftTableView;
 @property (nonatomic, strong) UITableView *rightTableView;
-@property (nonatomic, strong) UICollectionView *collectionView;
 //data source
 @property (nonatomic, copy) NSArray *array;
 //layers array
+//the menu title
 @property (nonatomic, copy) NSArray *titles;
+//indicator, follow the menu title
 @property (nonatomic, copy) NSArray *indicators;
+//the background of menu
 @property (nonatomic, copy) NSArray *bgLayers;
+
 @property (nonatomic, assign) NSInteger leftSelectedRow;
 @property (nonatomic, assign) BOOL hadSelected;
 
@@ -320,19 +324,15 @@
             _rightTableView.frame = CGRectMake(_origin.x+_leftTableView.frame.size.width, self.frame.origin.y + self.frame.size.height, self.frame.size.width*(1-ratio), 0);
         }
         
+        [self animateIdicator:_indicators[tapIndex] background:_backGroundView leftTableView:_leftTableView rightTableView:_rightTableView title:_titles[tapIndex] forward:YES complecte:^{
+            _show = YES;
+        }];
+        
         if (_currentSelectedMenudIndex!=-1) {
-            // 需要隐藏collectionview
-            [self animateCollectionView:_collectionView show:NO complete:^{
-                
-                [self animateIdicator:_indicators[tapIndex] background:_backGroundView leftTableView:_leftTableView rightTableView:_rightTableView title:_titles[tapIndex] forward:YES complecte:^{
-                    _show = YES;
-                }];
-            }];
+
             
         } else{
-            [self animateIdicator:_indicators[tapIndex] background:_backGroundView leftTableView:_leftTableView rightTableView:_rightTableView title:_titles[tapIndex] forward:YES complecte:^{
-                _show = YES;
-            }];
+            
         }
         //            [(CALayer *)self.bgLayers[tapIndex] setBackgroundColor:SelectColor.CGColor];
     }
@@ -340,24 +340,9 @@
 
 - (void)backgroundTapped:(UITapGestureRecognizer *)paramSender
 {
-    BOOL displayByCollectionView = NO;
-    
-    if ([_dataSource respondsToSelector:@selector(displayByCollectionViewInColumn:)]) {
-        
-        displayByCollectionView = [_dataSource displayByCollectionViewInColumn:_currentSelectedMenudIndex];
-    }
-    if (displayByCollectionView) {
-        
-        [self animateIdicator:_indicators[_currentSelectedMenudIndex] background:_backGroundView collectionView:_collectionView title:_titles[_currentSelectedMenudIndex] forward:NO complecte:^{
-            _show = NO;
-        }];
-        
-    } else{
-        [self animateIdicator:_indicators[_currentSelectedMenudIndex] background:_backGroundView leftTableView:_leftTableView rightTableView:_rightTableView title:_titles[_currentSelectedMenudIndex] forward:NO complecte:^{
-            _show = NO;
-        }];
-    }
-    
+    [self animateIdicator:_indicators[_currentSelectedMenudIndex] background:_backGroundView leftTableView:_leftTableView rightTableView:_rightTableView title:_titles[_currentSelectedMenudIndex] forward:NO complecte:^{
+        _show = NO;
+    }];
 //    [(CALayer *)self.bgLayers[_currentSelectedMenudIndex] setBackgroundColor:BackColor.CGColor];
 }
 
@@ -464,43 +449,6 @@
     complete();
 }
 
-/**
- *动画显示下拉菜单
- */
-- (void)animateCollectionView:(UICollectionView *)collectionView show:(BOOL)show complete:(void(^)())complete {
-    
-    if (show) {
-        
-        CGFloat collectionViewHeight = 0;
-        
-        if (collectionView) {
-            
-            collectionView.frame = CGRectMake(_origin.x, self.frame.origin.y + self.frame.size.height, self.frame.size.width, 0);
-            [self.superview addSubview:collectionView];
-            
-            collectionViewHeight = ([collectionView numberOfItemsInSection:0] > 10) ? (5 * 38) : (ceil([collectionView numberOfItemsInSection:0]/2) * 38);
-        }
-        
-        [UIView animateWithDuration:0.2 animations:^{
-            if (collectionView) {
-                collectionView.frame = CGRectMake(_origin.x, self.frame.origin.y + self.frame.size.height, self.frame.size.width, collectionViewHeight);
-            }
-        }];
-    } else {
-        [UIView animateWithDuration:0.2 animations:^{
-            
-            if (collectionView) {
-                collectionView.frame = CGRectMake(_origin.x, self.frame.origin.y + self.frame.size.height, self.frame.size.width, 0);
-            }
-        } completion:^(BOOL finished) {
-            
-            if (collectionView) {
-                [collectionView removeFromSuperview];
-            }
-        }];
-    }
-    complete();
-}
 
 - (void)animateTitle:(CATextLayer *)title show:(BOOL)show complete:(void(^)())complete {
     CGSize size = [self calculateTitleSizeWithString:title.string];
@@ -516,22 +464,6 @@
             [self animateBackGroundView:background show:forward complete:^{
                 [self animateLeftTableView:leftTableView rightTableView:rightTableView show:forward complete:^{
                 }];
-            }];
-        }];
-    }];
-    
-    complete();
-}
-
-- (void)animateIdicator:(CAShapeLayer *)indicator background:(UIView *)background collectionView:(UICollectionView *)collectionView title:(CATextLayer *)title forward:(BOOL)forward complecte:(void(^)())complete{
-    
-    [self animateIndicator:indicator Forward:forward complete:^{
-        [self animateTitle:title show:forward complete:^{
-            [self animateBackGroundView:background show:forward complete:^{
-                [self animateCollectionView:collectionView show:forward complete:^{
-                    
-                }];
-                
             }];
         }];
     }];
