@@ -18,14 +18,7 @@
 - (NSInteger)menu:(JSDropDownMenu *)menu numberOfRowsInColumn:(NSInteger)column leftOrRight:(NSInteger)leftOrRight leftRow:(NSInteger)leftRow;
 - (NSString *)menu:(JSDropDownMenu *)menu titleForRowAtIndexPath:(JSIndexPath *)indexPath;
 - (NSString *)menu:(JSDropDownMenu *)menu titleForColumn:(NSInteger)column;
-/**
- * 表视图显示时，左边表显示比例
- */
-- (CGFloat)widthRatioOfLeftColumn:(NSInteger)column;
-/**
- * 表视图显示时，是否需要两个表显示
- */
-- (BOOL)haveRightTableViewInColumn:(NSInteger)column;
+
 
 /**
  * 返回当前菜单左边表选中行
@@ -36,10 +29,6 @@
 //default value is 1
 - (NSInteger)numberOfColumnsInMenu:(JSDropDownMenu *)menu;
 
-/**
- * 是否需要显示为UICollectionView 默认为否
- */
-- (BOOL)displayByCollectionViewInColumn:(NSInteger)column;
 
 @end
 

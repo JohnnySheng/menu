@@ -26,7 +26,6 @@
 @property (nonatomic, strong) UIView *backGroundView;
 @property (nonatomic, strong) UIView *bottomShadow;
 @property (nonatomic, strong) UITableView *leftTableView;
-@property (nonatomic, strong) UITableView *rightTableView;
 //data source
 @property (nonatomic, copy) NSArray *array;
 //layers array
@@ -149,16 +148,8 @@
         _leftTableView.dataSource = self;
         _leftTableView.delegate = self;
         
-        _rightTableView = [[UITableView alloc] initWithFrame:CGRectMake(self.frame.size.width, self.frame.origin.y + self.frame.size.height, 0, 0) style:UITableViewStyleGrouped];
-        _rightTableView.rowHeight = 38;
-        _rightTableView.separatorColor = [UIColor colorWithRed:220.f/255.0f green:220.f/255.0f blue:220.f/255.0f alpha:1.0];
-        _rightTableView.dataSource = self;
-        _rightTableView.delegate = self;
-        
-        
         self.autoresizesSubviews = NO;
         _leftTableView.autoresizesSubviews = NO;
-        _rightTableView.autoresizesSubviews = NO;
         
         //self tapped
         self.backgroundColor = [UIColor whiteColor];
@@ -279,19 +270,9 @@
         }
     }
     
-    BOOL haveRightTableView = [_dataSource haveRightTableViewInColumn:tapIndex];
-    //        UITableView *leftTableView = _leftTableView;
-    UITableView *rightTableView = nil;
-    
-    if (haveRightTableView) {
-        rightTableView = _rightTableView;
-        // 修改左右tableview显示比例
-        
-    }
-    
     if (tapIndex == _currentSelectedMenudIndex && _show) {
         
-        [self animateIdicator:_indicators[_currentSelectedMenudIndex] background:_backGroundView leftTableView:_leftTableView rightTableView:_rightTableView title:_titles[_currentSelectedMenudIndex] forward:NO complecte:^{
+        [self animateIdicator:_indicators[_currentSelectedMenudIndex] background:_backGroundView leftTableView:_leftTableView title:_titles[_currentSelectedMenudIndex] forward:NO complecte:^{
             _currentSelectedMenudIndex = tapIndex;
             _show = NO;
         }];
@@ -308,39 +289,23 @@
             _leftSelectedRow = [_dataSource currentLeftSelectedRow:_currentSelectedMenudIndex];
         }
         
-        if (rightTableView) {
-            [rightTableView reloadData];
-        }
         [_leftTableView reloadData];
-        
-        CGFloat ratio = [_dataSource widthRatioOfLeftColumn:_currentSelectedMenudIndex];
         if (_leftTableView) {
-            
-            _leftTableView.frame = CGRectMake(_leftTableView.frame.origin.x, self.frame.origin.y + self.frame.size.height, self.frame.size.width*ratio, 0);
+            _leftTableView.frame = CGRectMake(_leftTableView.frame.origin.x, self.frame.origin.y + self.frame.size.height, self.frame.size.width, 0);
         }
+
         
-        if (_rightTableView) {
-            
-            _rightTableView.frame = CGRectMake(_origin.x+_leftTableView.frame.size.width, self.frame.origin.y + self.frame.size.height, self.frame.size.width*(1-ratio), 0);
-        }
-        
-        [self animateIdicator:_indicators[tapIndex] background:_backGroundView leftTableView:_leftTableView rightTableView:_rightTableView title:_titles[tapIndex] forward:YES complecte:^{
+        [self animateIdicator:_indicators[tapIndex] background:_backGroundView leftTableView:_leftTableView title:_titles[tapIndex] forward:YES complecte:^{
             _show = YES;
         }];
-        
-        if (_currentSelectedMenudIndex!=-1) {
 
-            
-        } else{
-            
-        }
         //            [(CALayer *)self.bgLayers[tapIndex] setBackgroundColor:SelectColor.CGColor];
     }
 }
 
 - (void)backgroundTapped:(UITapGestureRecognizer *)paramSender
 {
-    [self animateIdicator:_indicators[_currentSelectedMenudIndex] background:_backGroundView leftTableView:_leftTableView rightTableView:_rightTableView title:_titles[_currentSelectedMenudIndex] forward:NO complecte:^{
+    [self animateIdicator:_indicators[_currentSelectedMenudIndex] background:_backGroundView leftTableView:_leftTableView title:_titles[_currentSelectedMenudIndex] forward:NO complecte:^{
         _show = NO;
     }];
 //    [(CALayer *)self.bgLayers[_currentSelectedMenudIndex] setBackgroundColor:BackColor.CGColor];
@@ -388,9 +353,9 @@
 /**
  *动画显示下拉菜单
  */
-- (void)animateLeftTableView:(UITableView *)leftTableView rightTableView:(UITableView *)rightTableView show:(BOOL)show complete:(void(^)())complete {
+- (void)animateLeftTableView:(UITableView *)leftTableView show:(BOOL)show complete:(void(^)())complete {
     
-    CGFloat ratio = [_dataSource widthRatioOfLeftColumn:_currentSelectedMenudIndex];
+    CGFloat ratio = 1;
     
     if (show) {
         
@@ -407,23 +372,13 @@
 
         }
         
-        if (rightTableView) {
-            
-            rightTableView.frame = CGRectMake(_origin.x+leftTableView.frame.size.width, self.frame.origin.y + self.frame.size.height, self.frame.size.width*(1-ratio), 0);
-            
-            [self.superview addSubview:rightTableView];
-            
-            rightTableViewHeight = ([rightTableView numberOfRowsInSection:0] > 5) ? (5 * rightTableView.rowHeight) : ([rightTableView numberOfRowsInSection:0] * rightTableView.rowHeight);
-        }
+     
         
         CGFloat tableViewHeight = MAX(leftTableViewHeight, rightTableViewHeight);
         
         [UIView animateWithDuration:0.2 animations:^{
             if (leftTableView) {
                 leftTableView.frame = CGRectMake(_origin.x, self.frame.origin.y + self.frame.size.height, self.frame.size.width*ratio, tableViewHeight);
-            }
-            if (rightTableView) {
-                rightTableView.frame = CGRectMake(_origin.x+leftTableView.frame.size.width, self.frame.origin.y + self.frame.size.height, self.frame.size.width*(1-ratio), tableViewHeight);
             }
         }];
     } else {
@@ -432,17 +387,11 @@
             if (leftTableView) {
                 leftTableView.frame = CGRectMake(_origin.x, self.frame.origin.y + self.frame.size.height, self.frame.size.width*ratio, 0);
             }
-            if (rightTableView) {
-                rightTableView.frame = CGRectMake(_origin.x+leftTableView.frame.size.width, self.frame.origin.y + self.frame.size.height, self.frame.size.width*(1-ratio), 0);
-            }
             
         } completion:^(BOOL finished) {
             
             if (leftTableView) {
                 [leftTableView removeFromSuperview];
-            }
-            if (rightTableView) {
-                [rightTableView removeFromSuperview];
             }
         }];
     }
@@ -457,12 +406,12 @@
     complete();
 }
 
-- (void)animateIdicator:(CAShapeLayer *)indicator background:(UIView *)background leftTableView:(UITableView *)leftTableView rightTableView:(UITableView *)rightTableView title:(CATextLayer *)title forward:(BOOL)forward complecte:(void(^)())complete{
+- (void)animateIdicator:(CAShapeLayer *)indicator background:(UIView *)background leftTableView:(UITableView *)leftTableView title:(CATextLayer *)title forward:(BOOL)forward complecte:(void(^)())complete{
     
     [self animateIndicator:indicator Forward:forward complete:^{
         [self animateTitle:title show:forward complete:^{
             [self animateBackGroundView:background show:forward complete:^{
-                [self animateLeftTableView:leftTableView rightTableView:rightTableView show:forward complete:^{
+                [self animateLeftTableView:leftTableView show:forward complete:^{
                 }];
             }];
         }];
@@ -475,9 +424,6 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     
     NSInteger leftOrRight = 0;
-    if (_rightTableView == tableView) {
-        leftOrRight = 1;
-    }
     
     NSAssert(self.dataSource != nil, @"menu's dataSource shouldn't be nil");
     if ([self.dataSource respondsToSelector:@selector(menu:numberOfRowsInColumn:leftOrRight: leftRow:)]) {
@@ -514,11 +460,6 @@
     
     
     NSInteger leftOrRight = 0;
-    
-    if (_rightTableView==tableView) {
-        
-        leftOrRight = 1;
-    }
     
 //    UILabel *titleLabel = (UILabel*)[cell viewWithTag:1];
     
@@ -558,7 +499,7 @@
         }
     } else{
         
-        CGFloat ratio = [_dataSource widthRatioOfLeftColumn:_currentSelectedMenudIndex];
+        CGFloat ratio = 1;
         
         CGFloat marginX = 20;//(self.frame.size.width*ratio-textSize.width)/2;
         
@@ -566,19 +507,9 @@
         
         if (!_hadSelected && _leftSelectedRow == indexPath.row) {
             cell.backgroundColor = BackColor;
-            BOOL haveRightTableView = [_dataSource haveRightTableViewInColumn:_currentSelectedMenudIndex];
-            if(!haveRightTableView){
-                titleLabel.textColor = _selectedTextColor;
-//                UIImageView *accessoryImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ico_make"]];
-//                
-//                accessoryImageView.frame = CGRectMake(titleLabel.frame.origin.x+titleLabel.frame.size.width+10, (self.frame.size.height-12)/2, 16, 12);
-//                
-//                [cell addSubview:accessoryImageView];
-            }
+            titleLabel.textColor = _selectedTextColor;
         } else{
-            
             titleLabel.textColor = _textColor;
-    
         }
     }
     
@@ -589,32 +520,18 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
     NSInteger leftOrRight = 0;
-    if (_rightTableView==tableView) {
-        leftOrRight = 1;
-    } else {
-        _leftSelectedRow = indexPath.row;
-    }
+    _leftSelectedRow = indexPath.row;
     
     if (self.delegate || [self.delegate respondsToSelector:@selector(menu:didSelectRowAtIndexPath:)]) {
-        
-        BOOL haveRightTableView = [_dataSource haveRightTableViewInColumn:_currentSelectedMenudIndex];
-        
-        if ((leftOrRight==0 && !haveRightTableView) || leftOrRight==1) {
-            [self confiMenuWithSelectRow:indexPath.row leftOrRight:leftOrRight];
-        }
+         [self confiMenuWithSelectRow:indexPath.row leftOrRight:leftOrRight];
         
         [self.delegate menu:self didSelectRowAtIndexPath:[JSIndexPath indexPathWithCol:self.currentSelectedMenudIndex leftOrRight:leftOrRight leftRow:_leftSelectedRow row:indexPath.row]];
-        
-        if (leftOrRight==0 && haveRightTableView) {
-            if (!_hadSelected) {
-                _hadSelected = YES;
-                [_leftTableView reloadData];
-                NSIndexPath *selectedIndexPath = [NSIndexPath indexPathForRow:_leftSelectedRow inSection:0];
-                
-                [_leftTableView selectRowAtIndexPath:selectedIndexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
-            }
+        if (!_hadSelected) {
+            _hadSelected = YES;
+            [_leftTableView reloadData];
+            NSIndexPath *selectedIndexPath = [NSIndexPath indexPathForRow:_leftSelectedRow inSection:0];
             
-            [_rightTableView reloadData];
+            [_leftTableView selectRowAtIndexPath:selectedIndexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
         }
         
     } else {
@@ -626,7 +543,7 @@
     CATextLayer *title = (CATextLayer *)_titles[_currentSelectedMenudIndex];
     title.string = [self.dataSource menu:self titleForRowAtIndexPath:[JSIndexPath indexPathWithCol:self.currentSelectedMenudIndex leftOrRight:leftOrRight leftRow:_leftSelectedRow row:row]];
     
-    [self animateIdicator:_indicators[_currentSelectedMenudIndex] background:_backGroundView leftTableView:_leftTableView rightTableView:_rightTableView title:_titles[_currentSelectedMenudIndex] forward:NO complecte:^{
+    [self animateIdicator:_indicators[_currentSelectedMenudIndex] background:_backGroundView leftTableView:_leftTableView title:_titles[_currentSelectedMenudIndex] forward:NO complecte:^{
         _show = NO;
     }];
 //    [(CALayer *)self.bgLayers[_currentSelectedMenudIndex] setBackgroundColor:BackColor.CGColor];

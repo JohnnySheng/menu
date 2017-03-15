@@ -45,18 +45,6 @@
     return 1;
 }
 
--(BOOL)displayByCollectionViewInColumn:(NSInteger)column{
-    return NO;
-}
-
--(BOOL)haveRightTableViewInColumn:(NSInteger)column{
-    return NO;
-}
-
--(CGFloat)widthRatioOfLeftColumn:(NSInteger)column{
-    return 1;
-}
-
 -(NSInteger)currentLeftSelectedRow:(NSInteger)column{
     return _currentData2Index;
 }
